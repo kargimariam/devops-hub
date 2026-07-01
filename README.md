@@ -2,9 +2,7 @@
 
 Unified DevOps capstone that merges and improves three semester assignments into one production-ready, locally runnable system.
 
-## Repository
 
-**GitHub:** https://github.com/kargimariam/devops_final
 
 ## Local Application
 
@@ -28,14 +26,14 @@ flowchart LR
     SEC --> BUILD[Docker Build + Trivy]
     BUILD --> DEPLOY[Deploy Verify on main]
 
-    User[User] --> App[DevOps Hub App :3000]
-    App --> Metrics[/metrics]
+    User[User] --> App["DevOps Hub App port 3000"]
+    App --> Metrics["Metrics endpoint"]
     App --> Logs[JSON stdout logs]
 
-    Metrics --> Prom[Prometheus :9090]
+    Metrics --> Prom["Prometheus port 9090"]
     Logs --> Promtail[Promtail]
-    Promtail --> Loki[Loki :3100]
-    Prom --> Grafana[Grafana :3001]
+    Promtail --> Loki["Loki port 3100"]
+    Prom --> Grafana["Grafana port 3001"]
     Loki --> Grafana
     Prom --> Alert[HighErrorRate CRITICAL]
 ```
@@ -83,6 +81,30 @@ This single command:
 | Grafana | http://localhost:3001 (admin / admin) |
 | Loki | http://localhost:3100 |
 
+### Platform notes
+
+This project was developed and tested on Windows with PowerShell. Shell scripts (`.sh`) target Linux/macOS and run automatically in GitHub Actions on `ubuntu-latest`. On Windows, use the PowerShell setup script and Docker Compose commands below.
+
+| Task | Windows (PowerShell) | Linux / macOS / Git Bash |
+|---|---|---|
+| One-command setup | `.\scripts\setup.ps1` | `bash scripts/setup.sh` |
+| Start stack | `docker compose up --build -d` | same |
+| Stop stack | `docker compose down` | same |
+| Lint and tests | `npm run lint` / `npm run test` | same |
+| Blue-green deploy | Git Bash: `bash scripts/deploy.sh` | `bash scripts/deploy.sh` |
+| Health monitor | Git Bash: `bash scripts/monitor.sh` | `bash scripts/monitor.sh` |
+| Trigger test errors | see Alerting section | `curl` loop in Alerting section |
+
+To run `.sh` scripts locally on Windows, install [Git for Windows](https://git-scm.com/download/win) and use Git Bash.
+
+Common PowerShell commands used during local development:
+
+```powershell
+.\scripts\setup.ps1
+Invoke-WebRequest "http://localhost:3000/api/health" -UseBasicParsing
+docker compose down
+```
+
 ## Environment Setup (Manual Alternative)
 
 ```bash
@@ -121,9 +143,11 @@ Broken code or critical security findings block the pipeline.
 
 ### Docker deployment (primary – used for evaluation)
 
-```bash
-bash scripts/setup.sh
+```powershell
+.\scripts\setup.ps1
 ```
+
+Linux / macOS / Git Bash equivalent: `bash scripts/setup.sh`
 
 Uses a **rolling update** via Docker Compose: new image is built, health check must pass, then traffic goes to the new container.
 
@@ -133,6 +157,8 @@ Uses a **rolling update** via Docker Compose: new image is built, health check m
 bash scripts/deploy.sh
 bash scripts/rollback.sh
 ```
+
+Requires bash (Git Bash on Windows). The CI pipeline on `main` also runs deployment verification via `scripts/verify-deployment.sh`.
 
 `deploy.sh` now runs real health checks before switching traffic (improved from midterm).
 
@@ -175,6 +201,12 @@ Every request is logged as JSON to stdout. Promtail ships logs to Loki. Query in
 Prometheus rule `HighErrorRate` fires CRITICAL when error rate exceeds 5/minute.
 
 Trigger the alert manually:
+
+```powershell
+1..20 | ForEach-Object { Invoke-WebRequest "http://localhost:3000/api/simulate-error" -UseBasicParsing }
+```
+
+Linux / macOS / Git Bash:
 
 ```bash
 for i in $(seq 1 20); do curl http://localhost:3000/api/simulate-error; done
