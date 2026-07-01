@@ -1,0 +1,11 @@
+groups:
+  - name: devops-application-alerts
+    rules:
+      - alert: HighErrorRate
+        expr: rate(app_errors_total[1m]) * 60 > 5
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "CRITICAL: Application error rate is high"
+          description: "The application is producing more than 5 errors per minute over the last 1 minute."

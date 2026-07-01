@@ -1,0 +1,50 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: devops-app
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+
+    relabel_configs:
+      - source_labels:
+          - __meta_docker_container_name
+        regex: /devops-app
+        action: keep
+
+      - source_labels:
+          - __meta_docker_container_name
+        regex: /(.+)
+        target_label: container
+
+      - target_label: job
+        replacement: devops-app
+
+    pipeline_stages:
+      - docker: {}
+
+      - static_labels:
+          job: devops-app
+          container: devops-app
+
+      - json:
+          expressions:
+            timestamp: timestamp
+            level: level
+            method: method
+            path: path
+            status_code: status_code
+            message: message
+
+      - timestamp:
+          source: timestamp
+          format: RFC3339Nano
+          action_on_failure: skip

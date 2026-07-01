@@ -1,0 +1,13 @@
+node_modules
+dist
+deployments
+production
+logs
+.git
+.github
+screenshots
+docs
+*.log
+.env
+.env.*
+!.env.example
