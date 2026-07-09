@@ -1,12 +1,10 @@
-# DevOps Final Project
+# DevOps Hub
 
-This repository contains a full-stack DevOps capstone that combines work from three semester assignments into one locally runnable system. The application runs in Docker Compose with Prometheus, Grafana, Loki, and Promtail for metrics, logging, and alerting. CI/CD is handled through GitHub Actions with automated security scanning and deployment verification.
+A locally runnable DevOps platform built with React, TypeScript, and Express. The application runs in Docker Compose alongside Prometheus, Grafana, Loki, and Promtail for metrics, logging, and alerting. CI/CD is handled through GitHub Actions with automated security scanning and deployment verification.
 
-**Repository:** https://github.com/kargimariam/devops_final
+## Platform Overview
 
-## Requirement Mapping
-
-| Requirement | Where it is implemented |
+| Feature | Where it is implemented |
 |---|---|
 | One-command environment setup | `scripts/setup.ps1`, `scripts/setup.sh` |
 | Docker Compose infrastructure | `docker-compose.yml` |
@@ -22,13 +20,13 @@ This repository contains a full-stack DevOps capstone that combines work from th
 | Branching strategy | `main` and `dev` branches |
 | Application API + tests | `server.ts`, `src/App.test.tsx` |
 
-## Semester Work Integrated
+## Capabilities
 
-| Previous assignment | What was kept and improved |
+| Area | Implementation |
 |---|---|
-| Assignment 1 (CI/CD) | GitHub Actions pipeline with quality gate, security stage, and deploy verification |
-| Assignment 2 (Observability Lab) | Prometheus, Grafana, Loki, Promtail, custom metrics, JSON logs, CRITICAL alerts |
-| Midterm (IaC + Blue-Green) | One-command setup, blue-green deploy scripts, rollback, health monitoring |
+| CI/CD | GitHub Actions pipeline with quality gate, security stage, and deploy verification |
+| Observability | Prometheus, Grafana, Loki, Promtail, custom metrics, JSON logs, CRITICAL alerts |
+| Deployment & reliability | One-command setup, blue-green deploy scripts, rollback, health monitoring |
 
 ## Architecture
 
@@ -243,7 +241,7 @@ bash scripts/monitor.sh
 
 ## Screenshots
 
-Evidence for setup, observability, alerting, and CI is included in the `screenshots/` folder.
+Screenshots of the running application, observability stack, alerting, and CI pipeline are in the `screenshots/` folder.
 
 ### Running application
 
@@ -290,7 +288,7 @@ docker compose down -v
 ## Project Structure
 
 ```text
-devops_final/
+devops-hub/
 ├── .github/workflows/ci-cd.yml
 ├── docker-compose.yml
 ├── Dockerfile
